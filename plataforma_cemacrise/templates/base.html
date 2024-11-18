@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=0.8">
+  <title>Plataforma</title>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link rel="stylesheet" href="{% static 'lib/adminlte/plugins/fontawesome-free/css/all.min.css' %}">
+  <link rel="stylesheet" href="{% static 'lib/adminlte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}">
+  <link rel="stylesheet" href="{% static 'lib/adminlte/css/adminlte.min.css' %}">
+  <link rel="stylesheet" href="{% static 'lib/adminlte/icon/bootstrap-icons.css' %}">
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+  <div class="wrapper">
+    {% csrf_token %}
+    {% include 'header.html' %}
+
+    <div class="content-wrapper">
+      {% block 'contenido' %}
+      <br>
+      <section class="content">
+        <div class="container-fluid">
+          <!-- Small boxes (Stat box) -->
+          <div class="row">
+            <div class="col-lg-3 col-6">
+              <!-- small box -->
+              <div class="small-box bg-info">
+                <div class="inner">
+                  <h3>{{Computadora}}</h3>
+                  <p>Computadoras</p>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-icon ion-monitor"></ion-icon></i>
+                </div>
+                <a href="#" class="small-box-footer">Informacion <i class="fas fa-arrow-circle-right"></i></a>
+              </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+              <!-- small box -->
+              <div class="small-box bg-success">
+                <div class="inner">
+                  <h3>{{Correos}}<sup style="font-size: 20px"></sup></h3>
+  
+                  <p>Soportes de Correo</p>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-icon ion-email"></i>
+                </div>
+                <a href="#" class="small-box-footer">Informacion <i class="fas fa-arrow-circle-right"></i></a>
+              </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+              <!-- small box -->
+              <div class="small-box bg-warning">
+                <div class="inner">
+                  <h3>{{EquiposPersonales}}</h3>
+  
+                  <p>Equipos Personales</p>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-icon ion-laptop"></i>
+                </div>
+                <a href="#" class="small-box-footer">Informacion<i class="fas fa-arrow-circle-right"></i></a>
+              </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+              <!-- small box -->
+              <div class="small-box bg-danger">
+                <div class="inner">
+                  <h3>{{Impresoras}}</h3>
+  
+                  <p>Impresoras</p>
+                </div>
+                <div class="icon">
+                  <i class="ion bi bi-printer"></i>
+                </div>
+                <a href="#" class="small-box-footer">Informacion <i class="fas fa-arrow-circle-right"></i></a>
+              </div>
+            </div>
+            <!-- ./col -->
+          </div>
+
+        </div><!-- /.container-fluid -->
+      </section>
+      {% endblock %}
+    </div>
+
+    {% include 'footer.html' %}
+  </div>
+  <script src="{% static 'lib/adminlte/plugins/jquery/jquery.min.js' %}"></script>
+  <script src="{% static 'lib/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'lib/adminlte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+  <script src="{% static 'lib/adminlte/js/adminlte.min.js' %}"></script>
+
+</body>
+</html>

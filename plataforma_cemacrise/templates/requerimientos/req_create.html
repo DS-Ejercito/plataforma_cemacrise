@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block 'contenido' %}
+<link rel="stylesheet" href="../../static/lib/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="../../static/lib/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="../../static/lib/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<section class="content-header">
+</section>
+<section class="content">
+  <div class="container-fluid">
+    <form action="/req_create_bd/" enctype="multipart/form-data" method="post">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Registro de requerimiento</h3>
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <label for="fch_rec" class="col-2 col-form-label">Fecha de Recepción</label>
+                <div class="col-4">
+                  <input type="date" class="form-control" id="fch_rec" name="fch_rec" required>
+                </div>
+                <label for="fch_fin" class="col-2 col-form-label">Fecha de Finalización</label>
+                <div class="col-4">
+                  <input type="date" class="form-control" id="fch_fin" name="fch_fin">
+                </div>
+              </div>
+              <br>
+              <div class="row">
+                <label for="cod_proc" class="col-2 col-form-label">Procedencia</label>
+                <div class="col-4">
+                  <select class="form-control" id="cod_proc" name="cod_proc" required>
+                    <option value="">Seleccione...</option>
+                    {% for procedencias in procedencias %}
+                    <option value="{{ procedencias.id }}">{{procedencias.descrip_corta}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <label for="num_exp""  class=" col-2 col-form-label">Exp.</label>
+                <div class="col-4">
+                  <input type="text" class="form-control" id="num_exp" name="num_exp" required maxlength="50" placeholder="Num. de Exp.">
+                </div>
+              </div>
+              <br>
+              <div class="row">
+                <label for="cod_tp_req" class="col-2 col-form-label">Prioridad</label>
+                <div class="col-4">
+                  <select class="form-control" id="cod_tp_req" name="cod_tp_req" required>
+                    <option value="">Seleccione...</option>
+                    {% for tipo in tipos_requerimiento %}
+                    <option value="{{ tipo.id }}">{{ tipo.descrip_corta }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <label for="cod_cat_req" class="col-2 col-form-label">Categoría</label>
+                <div class="col-4">
+                  <select class="form-control" id="cod_cat_req" name="cod_cat_req" required>
+                    <option value="">Seleccione...</option>
+                    {% for categorias in categorias_req %}
+                    <option value="{{ categorias.id }}">{{ categorias.descrip_corta }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="descrip_corta">Descripción Corta</label>
+                    <input type="text" class="form-control" id="descrip_corta" name="descrip_corta" maxlength="50" placeholder="Resumen"
+                      required>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="descrip_larga">Descripción Larga</label>
+                    <textarea class="form-control" id="descrip_larga" name="descrip_larga" rows="2" placeholder="Descripcion Completa del Requerimiento" required></textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="respo_ejec">Responsable de recepción</label>
+                    <input type="text" class="form-control" id="respo_rec" name="respo_rec" maxlength="50" placeholder="Responsable de la Recepcion del Req." required>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <div class="form-group">
+                    <div class="form-group">
+                      <label for="exampleInputFile">Imagen del Requerimiento</label>
+                      <div class="input-group">
+                        <div class="custom-file">
+                          <input type="file" class="custom-file-input" id="img_req" name="img_req" accept="application/pdf">
+                          <label class="custom-file-label" for="img_req"></label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6">
+                  <div class="form-group">
+                    <label for="respo_ejec">Responsable de Ejecución</label>
+                    <input type="text" class="form-control" id="respo_ejec" name="respo_ejec" placeholder="Responsable de realizar el Requerimiento" value="">
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="form-group">
+                    <label for="cod_est_req">Estado del Requerimiento</label>
+                    <select class="form-control" id="cod_est_req" name="cod_est_req" required>
+                      <option value="">Seleccione...</option>
+                      {% for estado in estados_req %}
+                      <option value="{{ estado.id }}">{{ estado.descrip_corta }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="descrip_resol">Descripción de Resolución</label>
+                    <textarea class="form-control" id="descrip_resol" name="descrip_resol" rows="2"
+                       placeholder="Conclusion del Requerimiento"></textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <div class="form-group">
+                    <div class="form-group">
+                      <label for="exampleInputFile">Imagen de la Resolución</label>
+                      <div class="input-group">
+                        <div class="custom-file">
+                          <input type="file" class="custom-file-input" id="img_resol" name="img_resol" accept="application/pdf">
+                          <label class="custom-file-label" for="img_resol"></label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-2">
+                  <button class="btn btn-default btn-block">
+                    <i class=" bi-arrow-left"></i>
+                    <a href="{% url 'requerimientos' %}" >Regresar</a>
+                  </button>
+                </div>
+                <div class="col-8">
+                </div>
+                <div class="col-2">
+                  <button type="submit" class="btn btn-default btn-block">
+                    <i class="bi bi-save"></i> Guardar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+<script src="../../static/lib/adminlte/plugins/jquery/jquery.min.js"></script>
+<script src="../../static/lib/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="../../static/lib/adminlte/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+<script>
+  $(function () {
+    bsCustomFileInput.init();
+  });
+</script>
+{% endblock %}

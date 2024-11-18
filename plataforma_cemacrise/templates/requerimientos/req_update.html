@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block 'contenido' %}
+<link rel="stylesheet" href="../../static/lib/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="../../static/lib/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="../../static/lib/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<section class="content-header">
+</section>
+<section class="content">
+  <div class="container-fluid">
+    <form action="/req_update_bd/{{Req1.id}}" enctype="multipart/form-data" method="post">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Registro de requerimiento</h3>
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body bg-light">
+              <div class="row">
+                <label for="fch_rec" class="col-2 col-form-label">Fecha de Recepción</label>
+                <div class="col-4">
+                  <input type="date" class="form-control" id="fch_rec" name="fch_rec" value="{{Req1.fch_rec.isoformat}}"
+                    required>
+                  </select>
+                </div>
+                <label for="fch_fin" class="col-2 col-form-label">Fecha de Finalización</label>
+                <div class="col-4">
+                  <input type="date" class="form-control" id="fch_fin" name="fch_fin"
+                    value="{{ Req1.fch_fin.isoformat}}">
+                </div>
+              </div>
+              <br>
+              <div class="row">
+                <label for="cod_proc" class="col-2 col-form-label">Procedencia</label>
+                <div class="col-4">
+                  <select class="form-control" id="cod_proc" name="cod_proc" required>
+                    {% for procedencia in procedencias %}
+                    {% if procedencia.id == Req1.cod_proc.id %}
+                    <option value="{{ procedencia.id }}" selected>{{ procedencia.descrip_corta }}</option>
+                    {% else %}
+                    <option value="{{ procedencia.id }}">{{ procedencia.descrip_corta }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+                <label for="num_exp""  class=" col-2 col-form-label">Exp.</label>
+                <div class="col-4">
+                  <input type="text" class="form-control" id="num_exp" name="num_exp" placeholder="Num. de Exp." value="{{ Req1.num_exp}}"
+                    maxlength="50">
+                </div>
+              </div>
+              <br>
+              <div class="row">
+                <label for="cod_tp_req" class="col-2 col-form-label">Prioridad</label>
+                <div class="col-4">
+                  <select class="form-control" id="cod_tp_req" name="cod_tp_req" required>
+                    {% for tipo in tipos_requerimiento %}
+                    {% if tipo.id == Req1.cod_tp_req.id %}
+                    <option value="{{ tipo.id }}" selected>{{tipo.descrip_corta}}</option>
+                    {% else %}
+                    <option value="{{ tipo.id }}">{{tipo.descrip_corta}}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+                <label for="cod_cat_req" class="col-2 col-form-label">Categoría</label>
+                <div class="col-4">
+                  <select class="form-control" id="cod_cat_req" name="cod_cat_req" required>
+                    {% for categorias in categorias_req %}
+                    {% if categorias.id == Req1.cod_cat_req.id %}
+                    <option value="{{ categorias.id }}" selected>{{ categorias.descrip_corta }}</option>
+                    {% else %}
+                    <option value="{{ categorias.id }}">{{ categorias.descrip_corta }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="descrip_corta">Descripción Corta</label>
+                    <input type="text" class="form-control" id="descrip_corta" name="descrip_corta"
+                      value="{{ Req1.descrip_corta}}" maxlength="50" placeholder="Resumen" required>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="descrip_larga">Descripción Larga</label>
+                    <textarea class="form-control" id="descrip_larga" name="descrip_larga" rows="2" maxlength="50"
+                    placeholder="Descripcion Completa del Requerimiento" required>{{ Req1.descrip_larga }}</textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="respo_ejec">Responsable de recepción</label>
+                    <input type="text" class="form-control" id="respo_rec" name="respo_rec" maxlength="50"
+                      value="{{ Req1.respo_rec}}" placeholder="Responsable de la Recepcion del Req." required>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-10">
+                  <div class="form-group">
+                    <div class="form-group">
+                      <label for="exampleInputFile">Imagen del Requerimiento</label>
+                      <div class="input-group">
+                        <div class="custom-file">
+                          <input type="file" class="custom-file-input" id="img_req" name="img_req" accept="application/pdf">
+                          <label class="custom-file-label" for="img_req">{{Req1.img_req.name}}</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-2">
+                  <label for="">Imagen</label>
+                  <button type="submit" class="btn btn-default btn-block">
+                    <i class="bi bi-download"></i>
+                    {% if Req1.img_req.url != "" %}
+                    <a href="{{Req1.img_req.url}} " target="_blank">Descargar</a>
+                    {% else %}
+                    No ha subido archivos
+                    {% endif %}
+                  </button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6">
+                  <div class="form-group">
+                    <label for="respo_ejec">Responsable de Ejecución</label>
+                    <input type="text" class="form-control" id="respo_ejec" name="respo_ejec"
+                      value="{{ Req1.respo_ejec}}"  placeholder="Responsable de realizar el Requerimiento" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="form-group">
+                    <label for="cod_est_req">Estado del Requerimiento</label>
+                    <select class="form-control" id="cod_est_req" name="cod_est_req" required>
+                      {% for estado in estados_req %}
+                      {% if estado.id == Req1.cod_est_req.id %}
+                      <option value="{{ estado.id }}" selected>{{ estado.descrip_corta }}</option>
+                      {% else %}
+                      <option value="{{ estado.id }}">{{ estado.descrip_corta }}</option>
+                      {% endif %}
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="descrip_resol">Descripción de Resolución</label>
+                    <textarea class="form-control" id="descrip_resol" name="descrip_resol" rows="2"
+                     placeholder="Conclusion del Requerimiento"> {{Req1.descrip_resol}}</textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-10">
+                  <div class="form-group">
+                    <div class="form-group">
+                      <label for="exampleInputFile">Imagen de la Resolución</label>
+                      <div class="input-group">
+                        <div class="custom-file">
+                          <input type="file" class="custom-file-input" id="img_resol" name="img_resol" accept="application/pdf">
+                          <label class="custom-file-label" for="img_resol">{{Req1.img_resol.name}}</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-2">
+                  <label for="">Imagen</label>
+                  <button type="submit" class="btn btn-default btn-block">
+                    <i class="bi bi-download"></i>
+                    {% if Req1.img_resol.url != "" %}
+                    <a href="{{Req1.img_resol.url}} " target="_blank">Descargar</a>
+                    {% else %}
+                    No ha subido archivos
+                    {% endif %}
+                  </button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-2">
+                  <button class="btn btn-default btn-block">
+                    <i class=" bi-arrow-left"></i>
+                    <a href="{% url 'requerimientos' %}" >Regresar</a>
+                  </button>
+                </div>
+                <div class="col-8">
+                </div>
+                <div class="col-2">
+                  <button type="submit" class="btn btn-default btn-block">
+                    <i class="bi bi-save"></i> Guardar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+<script src="../../static/lib/adminlte/plugins/jquery/jquery.min.js"></script>
+<script src="../../static/lib/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="../../static/lib/adminlte/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+<script>
+  $(function () {
+    bsCustomFileInput.init();
+  });
+</script>
+{% endblock %}

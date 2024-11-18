@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block 'contenido' %}
+<!-- DataTables -->
+<link rel="stylesheet" href="../../static/lib/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="../../static/lib/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="../../static/lib/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<style>
+  /* Style the container to limit its size */
+  .dataTables_filter {
+    float: right;
+  }
+
+  .dt-buttons {
+    float: left;
+  }
+
+  .btn_add_req {
+    float: right;
+  }
+
+  .small-table {
+    font-size: 0.875em;
+    /* Reducir el tamaño de la fuente */
+  }
+
+  .compact-table td,
+  .compact-table th {
+    padding: 0.3rem;
+    /* Reducir el padding */
+  }
+  
+</style>
+<section class="content-header">
+</section>
+<section class="content">
+  <div class="container-fluid">
+    <form action="/Diag_PC_create_bd/{{PC.id}}" enctype="multipart/form-data" method="post">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Registro de Diagnostico Tecnico</h3>
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <label for="Usuario_AD" class="col-2 col-form-label">Usuario AD</label>
+                <div class="col-4">
+                  <input type="text" class="form-control" id="Usuario_AD" name="Usuario_AD" maxlength="100"
+                    placeholder="Usuario de AD" value="{{PC.Usuario_AD}}" readonly>
+                </div>
+                <label for="Nom_Equipo_AD" class=" col-2 col-form-label">Nombre del Equipo</label>
+                <div class="col-4">
+                  <input type="text" class="form-control" id="Nom_Equipo_AD" name="Nom_Equipo_AD"
+                    placeholder="Nombre del Equipo" maxlength="100" value="{{PC.Nom_Equipo_AD}}" readonly>
+                </div>
+              </div>
+              <br>
+              <div class="row">
+                <label for="Marca" class="col-2 col-form-label">Tecnico.</label>
+                <div class="col-4">
+                  <select class="form-control" id="tecnico" name="tecnico" required>
+                    <option value=""> Seleccione</option>
+                    {% for tecnico in tecnico %}
+                    <option value="{{ tecnico.id }}">{{tecnico.descrip_corta}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <label for="Marca" class="col-2 col-form-label">Fecha de Diagn.</label>
+                <div class="col-4">
+                  <input type="date" class="form-control" id="fch" name="fch" required>
+                </div>
+              </div>
+              <br>
+              <div class="row">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="obs">Informe de Errores o Fallas</label>
+                    <textarea class="form-control" id="fallas" name="fallas" rows="2"
+                      placeholder="Informe de Errores o Fallas" required></textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="obs">Recomendaciones</label>
+                    <textarea class="form-control" id="recomendaciones" name="recomendaciones" rows="2"
+                      placeholder="Recomendaciones" required></textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-2">
+                  <button class="btn btn-default btn-block">
+                    <i class=" bi-arrow-left"></i>
+                    <a href="{% url 'Inv_pc_update' PC.id %}">Regresar</a>
+                  </button>
+                </div>
+                <div class="col-8">
+                </div>
+                <div class="col-2">
+                  <button type="submit" class="btn btn-default btn-block">
+                    <i class="bi bi-save"></i> Registrar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Diagnosticos Tecnicos</h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+              <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <table id="example1" class="table table-bordered table-striped table-sm compact-table">
+              <thead>
+                <tr>
+                  <th>No.</th>
+                  <th>Fecha</th>
+                  <th>Fallas</th>
+                  <th>Recomendacion</th>
+                  <th>Tecnico</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+                <tbody>
+                  {% for Diagn_Tec in Diagn_Tec %}
+                  <tr >
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{Diagn_Tec.fch|date:"d-m-Y"}}</td>
+                    <td>{{Diagn_Tec.fallas}}</td>
+                    <td>{{Diagn_Tec.recomendaciones}}</td>
+                    <td>Tecnico</td>
+                    <td>
+                      <a name="" id="" class="btn btn-danger btn-sm" href="{% url 'Manto_delete_bd' Diagn_Tec.id Diagn_Tec.id_Computadora.id %}" role="button"><i class="fas fa-trash-alt"></i>
+                      </a>
+                      <a name="" id="" class="btn btn-primary btn-sm" href="" role="button"><i class="bi bi-printer"></i></i>
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %} 
+              <!--                   {% for Movimientos in Movimientos %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{Movimientos.fecha|date:"d-m-Y"}}</td>
+                        <td>{{Movimientos.descripcion}}</td>
+                        <td>L. {{Movimientos.cantidad}}</td>
+                        <td>{{Movimientos.cod_tp_pago}}</td>
+                        <td>
+                          <a name="" id="" class="btn btn-info" href="{% url 'mov_editar' Movimientos.id %}" role="button"><i class="bi bi-pencil-square"></i></a>
+                          <a name="" id="" class="btn btn-danger" href="{% url 'mov_eliminar' Movimientos.id %}" role="button"><i class="fas fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %} -->
+              </tbody>
+            </table>
+            <br />
+            <div class="container">
+              <div class="dt-buttons"></div>
+              <div class="btn_add_req"><a href="{% url 'Inv_pc_create' %}" name="" id="" class="btn btn-info " href=""
+                  role="button">Agregar <i class="bi bi-plus-circle"></i></a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- jQuery -->
+<script src="../../static/lib/adminlte/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="../../static/lib/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables  & Plugins -->
+<script src="../../static/lib/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="../../static/lib/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="../../static/lib/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="../../static/lib/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="../../static/lib/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="../../static/lib/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="../../static/lib/adminlte/plugins/jszip/jszip.min.js"></script>
+<script src="../../static/lib/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="../../static/lib/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="../../static/lib/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="../../static/lib/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="../../static/lib/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<script>
+  jQuery(document).ready(function ($) {
+
+    /*$("#example1").DataTable({
+      "responsive": true, "lengthChange": true, "autoWidth": true, 
+      "buttons": ["copy", "csv", "excel", "pdf", "print"]
+    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');*/
+    $('#example1').DataTable({
+      // Habilita el desplazamiento horizontal si es necesario
+      "language": {
+        "decimal": "",
+        "emptyTable": "No hay datos disponibles en la tabla",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+        "infoEmpty": "Mostrando 0 a 0 de 0 entradas",
+        "infoFiltered": "(filtrado de _MAX_ entradas totales)",
+        "infoPostFix": "",
+        "thousands": ",",
+        "lengthMenu": "Mostrar _MENU_ entradas",
+        "loadingRecords": "Cargando...",
+        "processing": "Procesando...",
+        "search": "Buscar:",
+        "zeroRecords": "No se encontraron registros coincidentes",
+        "paginate": {
+          "first": "Primero",
+          "last": "Último",
+          "next": "Siguiente",
+          "previous": "Anterior"
+        },
+        "aria": {
+          "sortAscending": ": activar para ordenar la columna ascendente",
+          "sortDescending": ": activar para ordenar la columna descendente"
+        }
+      }
+    });
+    /*var buttons = new $.fn.dataTable.Buttons($('#example1').DataTable(), {
+            buttons: [ "excel", "pdf", "print"]
+        }).container().appendTo($('.dt-buttons'));*/
+    var buttons = new $.fn.dataTable.Buttons($('#example1').DataTable(), {
+      buttons: [
+        { extend: 'excel', className: 'btn btn-primary', text: '<i class="fas fa-file-excel"></i> Excel' },
+                /*{ extend: 'pdf', className: 'btn btn-primary', text: '<i class="fas fa-file-pdf"></i> PDF' },
+                */{ extend: 'print', className: 'btn btn-primary', text: '<i class="fas fa-print"></i> Imprimir' },
+      ]
+    }).container().appendTo($('.dt-buttons'));
+  })
+</script>
+{% endblock %}
