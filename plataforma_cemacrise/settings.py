@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'plataforma_cemacrise'
+    'gestor_incidencias',
 ]
 
 MIDDLEWARE = [
@@ -62,17 +62,24 @@ WSGI_APPLICATION = 'plataforma_cemacrise.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'mssql',
+#        'NAME': 'plataforma_cemacrise',
+#        'USER': 'sa',
+#        'PASSWORD': 'T3cn0l0g1@13',
+#        'HOST': '172.22.4.16',
+#        'PORT': '',
+#        'OPTIONS': {
+#            'driver': 'ODBC Driver 17 for SQL Server',
+#                     },
+#    }
+#}
+
 DATABASES = {
     'default': {
-        'ENGINE': 'mssql',
-        'NAME': 'plataforma_cemacrise',
-        'USER': 'sa',
-        'PASSWORD': 'T3cn0l0g1@13',
-        'HOST': '172.22.4.16',
-        'PORT': '',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-                    },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 

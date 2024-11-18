@@ -4,5 +4,5 @@ from django.urls import include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include("plataforma_cemacrise.urls"))
+    path('', include("gestor_incidencias.urls")),
 ]
