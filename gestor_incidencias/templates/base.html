@@ -26,7 +26,7 @@
       <br>
       <section class="content">
         <div class="container-fluid">
-          <div class="row">
+{% comment %}           <div class="row">
             <div class="col-12">
               <div class="card">
                 <div class="card-header">
@@ -45,7 +45,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> {% endcomment %}
 <!--           <div class="row">
             <div class="col-lg-3 col-6">
               <div class="small-box bg-info">
@@ -110,52 +110,5 @@
   <script src="{% static 'lib/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'lib/adminlte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
   <script src="{% static 'lib/adminlte/js/adminlte.min.js' %}"></script>
-  <script>
-    // Inicializar el mapa
-    var map = L.map('map').setView([14.061157, -87.260286], 7); // Coordenadas iniciales (lat, lon)
-
-    // Cargar los tiles del mapa de OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-    var icon1 = L.icon({
-            iconUrl: "{% static '../static/lib/adminlte/img/Ejercito.png' %}",  // URL del icono
-            iconSize: [32, 32],  // Tamaño del icono
-            iconAnchor: [16, 32],  // Ancla del icono (punto de referencia)
-            popupAnchor: [0, -32]  // Ajuste del popup (si lo necesitas)
-        });
-
-        var icon2 = L.icon({
-            iconUrl: "{% static '../static/lib/adminlte/img/Ejercito.png' %}",  // URL del segundo icono
-            iconSize: [32, 32],
-            iconAnchor: [16, 32],
-            popupAnchor: [0, -32]
-        });
-
-        var icon3 = L.icon({
-            iconUrl: "{% static '../static/lib/adminlte/img/Ejercito.png' %}",  // URL del tercer icono
-            iconSize: [32, 32],
-            iconAnchor: [16, 32],
-            popupAnchor: [0, -32]
-        });
-    // Agregar un marcador en la ubicación inicial
-    var marker = L.marker([51.505, -0.09]).addTo(map);
-
-    var marker1 = L.marker([51.505, -0.09], { icon: icon1 }).addTo(map);
-    marker1.bindPopup("<b>Punto 1</b><br>Descripción del primer punto");
-
-    var marker2 = L.marker([51.515, -0.1], { icon: icon2 }).addTo(map);
-    marker2.bindPopup("<b>Punto 2</b><br>Descripción del segundo punto");
-
-    var marker3 = L.marker([51.525, -0.12], { icon: icon3 }).addTo(map);
-    marker3.bindPopup("<b>Punto 3</b><br>Descripción del tercer punto");
-    // Actualizar la dirección cuando se mueva el marcador
-    map.on('click', function(e) {
-        marker.setLatLng(e.latlng);
-        // Actualizar el campo con las coordenadas
-        document.getElementById("address").value = "Lat: " + e.latlng.lat.toFixed(4) + " , Lon: " + e.latlng.lng.toFixed(4);
-    });
-
-</script>
 </body>
 </html>

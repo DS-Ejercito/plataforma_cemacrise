@@ -12,7 +12,8 @@ class procedencia(models.Model):
     
 class tp_incidencia(models.Model):
     id = models.AutoField(primary_key=True)
-    descrip_corta = models.TextField()    
+    descrip_corta = models.TextField()
+    nom_img =  models.TextField(null=True)
     def __str__(self):
         fila =  str(self.descrip_corta)
         return fila
@@ -27,7 +28,7 @@ class depto(models.Model):
 class munic(models.Model):
     id = models.AutoField(primary_key=True)
     descrip_corta = models.TextField()
-    cod_depto = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subcategorias')
+    cod_depto = models.ForeignKey(depto, on_delete=models.CASCADE, null=True, blank=True, related_name='subcategorias')
     def __str__(self):
         fila = str(self.descrip_corta)
         return fila
