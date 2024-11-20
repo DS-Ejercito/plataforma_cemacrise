@@ -7,18 +7,29 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <style>
-  .leaflet-bar a {
-
-
+  .drop-zone {
+    border: 2px dashed #007bff;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    
   }
-  .leaflet-bar a:hover {
-
+  .drop-zone.dragover {
+    background-color: #f1f1f1;
+  }
+  .drop-zone img {
+    max-width: 300px;
+      max-height: 300px;
+    height: auto;
+    margin-top: 10px;
   }
 </style>
 <section class="content-header"></section>
 <section class="content">
   <div class="container-fluid">
-    <form action="/sopcor_create_bd/" enctype="multipart/form-data" method="post">
+    <form action="/create_inc_bd/" enctype="multipart/form-data" method="post">
       {% csrf_token %}
       <div class="row">
         <div class="col-12">
@@ -37,22 +48,22 @@
             <div class="card-body">
               <div class="row mb-3">
                 <label for="fch_hora" class="col-2 col-form-label">Fecha</label>
-                <div class="col-10">
+                <div class="col-sm-10">
                   <input type="datetime-local" class="form-control" id="fch_hora" name="fch_hora" required>
                 </div>
               </div>
               <div class="row mb-3">
                 <label for="departamento" class="col-2 col-form-label">Departamento</label>
-                <div class="col-4">
+                <div class="col-sm-4">
                   <select class="form-control" id="departamento" name="departamento" required>
-                    <option value="">Seleccione...</option>
+                    <option value="" selected>Seleccione...</option>
                     {% for departamentos in departamentos %}
                     <option value="{{ departamentos.id }}">{{departamentos.descrip_corta}}</option>
                     {% endfor %}
                   </select>
                 </div>
                 <label for="municipio" class="col-2 col-form-label">Municipio</label>
-                <div class="col-4">
+                <div class="col-sm-4">
                   <select class="form-control" id="municipio" name="municipio" required>
                     <option value="">Seleccione...</option>
                   </select>
@@ -62,6 +73,9 @@
                 <label for="txt_cant" class="col-2 col-form-label">Cantidad</label>
                 <div class="col-10">
                   <input type="number" class="form-control" id="txt_cant" name="txt_cant" maxlength="100" placeholder="Cantidad" required>
+                </div>
+                <div class="col-10">
+                  <input type="number" value="{{ tp_incidencia_info.id }}" id="id_incidencia" name="id_incidencia">
                 </div>
               </div>
               <div class="row mb-3">
@@ -79,11 +93,21 @@
                   <input type="text" id="longitude" name="longitude" class="form-control" readonly>
                 </div>
               </div>
+
               <div class="row mb-3">
                 <div class="col-12">
                   <div class="form-group">
                     <label for="observ">Observaciones</label>
                     <textarea class="form-control" id="observ" name="observ" rows="2" placeholder="Observaciones" required></textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-12">
+                  <div class="drop-zone">
+                    <p>Arrastra y suelta una imagen aquí o haz clic para seleccionarla</p>
+                    <input type="file" class="form-control d-none" id="imageInput" accept="image/*">
+                    <img id="previewImage" class="img-fluid d-none" alt="Vista previa">
                   </div>
                 </div>
               </div>
@@ -152,19 +176,16 @@
   $(document).ready(function() {
       $('#departamento').change(function() {
           var depto_id = $(this).val();  // Obtener la ID de la marca seleccionada
-          var url = "{% url 'load_municipios' %}";  // URL para la vista que carga los modelos
-          
-          if (marcaId) {  // Verificar si se ha seleccionado una marca
+          var url = "{% url 'load_municipios' %}";  // URL para la vista que carga los modelos          
+          if (depto_id) {  // Verificar si se ha seleccionado una marca
               $.ajax({
                   url: url,
-                  data: {
-                      'depto_id': depto_id  // Enviar la ID de la marca seleccionada
-                  },
+                  data: {'depto_id': depto_id },
                   success: function(data) {
                       $('#municipio').empty();  // Limpiar el combobox de modelos
-                      $('#departamento').append('<option value="">Selecciona un modelo</option>');
+                      $('#municipio').append('<option value="" selected >Selecciona un municipio</option>');
                       $.each(data, function(key, value) {
-                          $('#modelo').append('<option value="' + value.id + '">' + value.descrip_corta + '</option>');
+                          $('#municipio').append('<option value="' + value.id + '">' + value.descrip_corta + '</option>');
                       });
                   }
               });
@@ -174,5 +195,56 @@
           }
       });
   });
+</script>
+<script>
+  const dropZone = document.querySelector('.drop-zone');
+  const fileInput = document.getElementById('imageInput');
+  const previewImage = document.getElementById('previewImage');
+
+  // Evento para arrastrar archivos
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+  });
+
+  dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('dragover');
+  });
+
+  // Detectar cuando se suelta el archivo
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) {
+      fileInput.files = e.dataTransfer.files;
+      handleFile(fileInput.files[0]);
+    }
+  });
+
+  // Abrir el diálogo de selección al hacer clic
+  dropZone.addEventListener('click', () => {
+    fileInput.click();
+  });
+
+  // Detectar cuando se selecciona un archivo
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length) {
+      handleFile(fileInput.files[0]);
+    }
+  });
+
+  // Mostrar la imagen seleccionada o arrastrada
+  function handleFile(file) {
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        previewImage.src = reader.result;
+        previewImage.classList.remove('d-none');
+      };
+      reader.readAsDataURL(file);
+    } else {
+      alert('Por favor, selecciona un archivo de imagen válido.');
+    }
+  }
 </script>
 {% endblock %}

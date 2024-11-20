@@ -8,4 +8,5 @@ urlpatterns = [
     path('incidencias/<int:tp_incidencia_p>', views.frm_princ_incidencias, name='incidencias'),
     path('incidencias_registro/<int:tp_incidencia_p>', views.frm_reg_incidencias, name='incidencias_registro'),
     path('load-municipios/', views.load_municipios, name='load_municipios'),
+    path('create_inc_bd/', views.create_inc_bd, name='create_inc_bd'),
     ]
