@@ -1,33 +1,18 @@
-{% extends 'base.html' %}
+{% extends '../core/base.html' %}
 {% load static %}
 {% block 'contenido' %}
-<link rel="stylesheet" href="{% static 'lib/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
 <link rel="stylesheet" href="{% static 'lib/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
 <link rel="stylesheet" href="{% static 'lib/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/form_reg_ins.css' %}">
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<style>
-  .drop-zone {
-    border: 2px dashed #007bff;
-    border-radius: 10px;
-    padding: 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-    
-  }
-  .drop-zone.dragover {
-    background-color: #f1f1f1;
-  }
-  .drop-zone img {
-    max-width: 300px;
-      max-height: 300px;
-    height: auto;
-    margin-top: 10px;
-  }
-</style>
+<!-- Estilos para pantalla completa -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@2.4.0/Control.FullScreen.css">
+<!-- Script para pantalla completa -->
+<script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@2.4.0/Control.FullScreen.js"></script>
 <section class="content-header"></section>
-<section class="content">
+<section class ="content">
+
   <div class="container-fluid">
     <form action="/create_inc_bd/" enctype="multipart/form-data" method="post">
       {% csrf_token %}
@@ -69,16 +54,20 @@
                   </select>
                 </div>
               </div>
+              {% if tp_incidencia_info.id != 1 and tp_incidencia_info.id != 2 %}
               <div class="row mb-3">
                 <label for="txt_cant" class="col-2 col-form-label">Cantidad</label>
                 <div class="col-10">
-                  <input type="number" class="form-control" id="txt_cant" name="txt_cant" maxlength="100" placeholder="Cantidad" required>
-                </div>
-                <div class="col-10">
-                  <input type="number" value="{{ tp_incidencia_info.id }}" id="id_incidencia" name="id_incidencia">
+                  <input type="number" class="form-control" id="txt_cant" name="txt_cant"  maxlength="100" placeholder="Cantidad" required>
                 </div>
               </div>
+              {% else %}
+              <input type="number"  class="d-none" value="1" id="txt_cant" name="txt_cant">
+              {% endif %}
               <div class="row mb-3">
+                
+                  <input type="number"  class="d-none" value="{{ tp_incidencia_info.id }}" id="id_incidencia" name="id_incidencia">
+                
                 <div class="col-2"></div>
                 <div class="col-8" id="map" style="width: 100%; height: 300px;"></div>
               </div>
@@ -93,7 +82,6 @@
                   <input type="text" id="longitude" name="longitude" class="form-control" readonly>
                 </div>
               </div>
-
               <div class="row mb-3">
                 <div class="col-12">
                   <div class="form-group">
@@ -106,7 +94,7 @@
                 <div class="col-12">
                   <div class="drop-zone">
                     <p>Arrastra y suelta una imagen aquí o haz clic para seleccionarla</p>
-                    <input type="file" class="form-control d-none" id="imageInput" accept="image/*">
+                    <input type="file" class="form-control d-none " id="imageInput" name="imageInput" accept="image/*">
                     <img id="previewImage" class="img-fluid d-none" alt="Vista previa">
                   </div>
                 </div>
@@ -127,124 +115,32 @@
 </section>
 <script src="{% static 'lib/adminlte/plugins/jquery/jquery.min.js' %}"></script>
 <script src="{% static 'lib/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/form_reg_ins.js' %}"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@2.4.0/Control.FullScreen.css" />
+  <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@2.4.0/Control.FullScreen.js"></script>
+  
 <script>
-  var map = L.map('map').setView([14.664990, -86.895006], 7);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map);
-  var marker;
-  function addMarker(lat, lng) {
-      if (marker) {map.removeLayer(marker); }
-      marker = L.marker([lat, lng]).addTo(map);
-      document.getElementById('latitude').value = lat;
-      document.getElementById('longitude').value = lng;
-  }
-  map.on('click', function (e) {
-    var lat = e.latlng.lat;
-    var lng = e.latlng.lng;
-    addMarker(lat, lng);});
-    function goToMyLocation() {
-      if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(function (position) {
-              var lat = position.coords.latitude;
-              var lng = position.coords.longitude;
-              // Centrar el mapa y agregar el marcador
-              map.setView([lat, lng], 13);
-              addMarker(lat, lng);
-          }, function () {
-              alert('No se pudo obtener la ubicación.');
-          });
-      } else {
-          alert('La geolocalización no está soportada en este navegador.');
-      }
-  }
-  var goToMyLocationButton = L.control({position: 'topright'});
-  goToMyLocationButton.onAdd = function(map) {
-      var button = L.DomUtil.create('a', 'leaflet-bar');
-      button.href = '#';
-      button.innerHTML = '<i class="fas fa-location-arrow"></i>'; // Icono del marcador
-      button.title = 'Ir a mi ubicación';
-      button.style.fontSize = '20px'
-      button.onclick = function() {
-          goToMyLocation();
-      };
-      return button;
-  };
-  goToMyLocationButton.addTo(map);
-</script>
-<script type="text/javascript">
   $(document).ready(function() {
-      $('#departamento').change(function() {
-          var depto_id = $(this).val();  // Obtener la ID de la marca seleccionada
-          var url = "{% url 'load_municipios' %}";  // URL para la vista que carga los modelos          
-          if (depto_id) {  // Verificar si se ha seleccionado una marca
-              $.ajax({
-                  url: url,
-                  data: {'depto_id': depto_id },
-                  success: function(data) {
-                      $('#municipio').empty();  // Limpiar el combobox de modelos
-                      $('#municipio').append('<option value="" selected >Selecciona un municipio</option>');
-                      $.each(data, function(key, value) {
-                          $('#municipio').append('<option value="' + value.id + '">' + value.descrip_corta + '</option>');
-                      });
-                  }
-              });
-          } else {
-              $('#municipio').empty();
-              $('#municipio').append('<option value="">Selecciona un modelo</option>');  // Restablecer el combobox de modelos si no se ha seleccionado una marca
-          }
-      });
-  });
-</script>
-<script>
-  const dropZone = document.querySelector('.drop-zone');
-  const fileInput = document.getElementById('imageInput');
-  const previewImage = document.getElementById('previewImage');
-
-  // Evento para arrastrar archivos
-  dropZone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropZone.classList.add('dragover');
-  });
-
-  dropZone.addEventListener('dragleave', () => {
-    dropZone.classList.remove('dragover');
-  });
-
-  // Detectar cuando se suelta el archivo
-  dropZone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropZone.classList.remove('dragover');
-    if (e.dataTransfer.files.length) {
-      fileInput.files = e.dataTransfer.files;
-      handleFile(fileInput.files[0]);
-    }
-  });
-
-  // Abrir el diálogo de selección al hacer clic
-  dropZone.addEventListener('click', () => {
-    fileInput.click();
-  });
-
-  // Detectar cuando se selecciona un archivo
-  fileInput.addEventListener('change', () => {
-    if (fileInput.files.length) {
-      handleFile(fileInput.files[0]);
-    }
-  });
-
-  // Mostrar la imagen seleccionada o arrastrada
-  function handleFile(file) {
-    if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        previewImage.src = reader.result;
-        previewImage.classList.remove('d-none');
-      };
-      reader.readAsDataURL(file);
-    } else {
-      alert('Por favor, selecciona un archivo de imagen válido.');
-    }
-  }
+    $('#departamento').change(function() {
+        var depto_id = $(this).val();
+        var url = "{% url 'load_municipios' %}";         
+        if (depto_id) { 
+            $.ajax({
+                url: url,
+                data: {'depto_id': depto_id },
+                success: function(data) {
+                    $('#municipio').empty();  // Limpiar el combobox de modelos
+                    $('#municipio').append('<option value="" selected >Selecciona un municipio</option>');
+                    $.each(data, function(key, value) {
+                        $('#municipio').append('<option value="' + value.id + '">' + value.descrip_corta + '</option>');
+                    });
+                }
+            });
+        } else {
+            $('#municipio').empty();
+            $('#municipio').append('<option value="">Selecciona un modelo</option>'); 
+        }
+    });
+});
 </script>
 {% endblock %}

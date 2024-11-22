@@ -1,6 +1,14 @@
+import os
+from uuid import uuid4
 from django.db import models
 
 # Create your models here.
+def camb_nom_arch(instance, filename):
+    extension = os.path.splitext(filename)[1]
+    nuevo_nombre = f"{uuid4().hex}{extension}"
+    carpeta_destino = "Incidencias/"
+    return os.path.join(carpeta_destino, nuevo_nombre)
+
 class procedencia(models.Model):
     id = models.AutoField(primary_key=True)
     descrip_corta = models.TextField()    
@@ -45,7 +53,7 @@ class incidencia(models.Model):
     longitud = models.FloatField(null = True)
     latitud = models.FloatField(null = True)
     cant = models.FloatField(null = True)
-    img = models.FileField(upload_to='Incidencias/', null = True, blank= True)
+    img = models.FileField(upload_to=camb_nom_arch, null = True, blank= True)
     def __str__(self):
         fila = "- Descripcion:" + str(self.fecha)
         return fila

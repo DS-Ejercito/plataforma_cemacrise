@@ -1,6 +1,9 @@
 from django.urls import path
+
+from plataforma_cemacrise import settings
 from . import views
 from django.conf.urls.static import static
+from plataforma_cemacrise.settings import MEDIA_ROOT, MEDIA_URL
 
 urlpatterns = [
     path('', views.inicio, name='inicio'),

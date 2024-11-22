@@ -19,7 +19,7 @@
 <body class="hold-transition sidebar-mini layout-fixed">
   <div class="wrapper">
     {% csrf_token %}
-    {% include 'header.html' %}
+    {% include 'core/header.html' %}
 
     <div class="content-wrapper">
       {% block 'contenido' %}
@@ -104,7 +104,7 @@
       {% endblock %}
     </div>
 
-    {% include 'footer.html' %}
+    {% include 'core/footer.html' %}
   </div>
   <script src="{% static 'lib/adminlte/plugins/jquery/jquery.min.js' %}"></script>
   <script src="{% static 'lib/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>

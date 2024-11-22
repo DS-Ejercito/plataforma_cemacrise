@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends '../core/base.html' %}
 {% load static %}
 {% block 'contenido' %}
   <!-- DataTables -->
@@ -7,6 +7,11 @@
   <link rel="stylesheet" href="../../static/lib/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<!-- Estilos para pantalla completa -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@2.4.0/Control.FullScreen.css">
+<!-- Script para pantalla completa -->
+<script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@2.4.0/Control.FullScreen.js"></script>
+  
   <style>
     /* Style the container to limit its size */
     .dataTables_filter {
@@ -28,10 +33,14 @@
     .compact-table th {
       padding: 0.3rem; /* Reducir el padding */
     }
+    body.fullscreen #map {
+      height: 100%; /* Altura completa para pantalla completa */
+    }
   </style>
   <section class="content-header">
 </section>
 <section class="content">
+  {% csrf_token %}
   <div class="container-fluid">
     <div class="row">
       <div class="col-12">
@@ -160,9 +169,14 @@
             ]
         }).container().appendTo($('.dt-buttons'));
   })
-</script>
-<script>
-  var map = L.map('map').setView([14.664990, -86.895006], 7);
+  const map = L.map('map', {
+    center: [14.664990, -86.895006], // Coordenadas iniciales
+    zoom: 7,
+    fullscreenControl: true, // Activa el botón de pantalla completa
+    fullscreenControlOptions: {
+      position: 'topleft' // Puedes cambiar la posición (topleft, topright, etc.)
+    }
+  });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
@@ -182,7 +196,6 @@
     if (lat && lng) {
       const marker = L.marker([lat, lng], { icon: icon1 }) .addTo(map);
       marker.bindPopup(`
-        <b>Incidencia:</b> ${row.cells[2].innerText} <br>
         <b>Fecha:</b> ${row.cells[1].innerText} <br>
         <b>Departamento:</b> ${row.cells[2].innerText} <br>
         <b>Municipio:</b> ${row.cells[3].innerText}
