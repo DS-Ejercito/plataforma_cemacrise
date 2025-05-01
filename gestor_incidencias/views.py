@@ -1,11 +1,14 @@
 from datetime import datetime
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+import pandas as pd
 from .models import *
+
 
 list_deptos = depto.objects.all()
 list_munic = munic.objects.all()
 list_est_dano = est_dano.objects.all()
+cvs = cv.objects.all()
 
 def inicio(request):
     return render(request, 'index.html')
@@ -137,3 +140,73 @@ def create_asist_bd(request):
         ) 
     asist_reg.save()
     return frm_princ_asist(request, request.POST['id_asist'])
+
+def frm_princ_cv(request):
+
+    context = {
+        'cv' : cvs
+    }
+    return render(request, 'cv/form_gen_cv.html', context)
+def frm_mapa(request):
+
+    return render(request, 'cv/form_mapa.html')
+
+def cargar_cv(request):
+    if request.method == 'POST':
+        cv.objects.all().delete()
+        # Obtenemos el archivo subido
+        archivo_excel = request.FILES['archivo_excel']
+        
+        # Leemos el archivo Excel con pandas
+        try:
+            df = pd.read_excel(archivo_excel)
+            # Iteramos sobre las filas del DataFrame
+            for index, row in df.iterrows():
+                # Crear el contacto en la base de datos
+                cv.objects.create(
+                    cod_depto=depto.objects.get(id=row['Departamento']),
+                    cod_munic=munic.objects.get(id=row['Municipio']),                    
+                    latitud=row['Latitud'],
+                    longitud=row['Longitud'],
+                    nom=row['Nombre'],
+                    procedencia=procedencia.objects.get(id=row['Unidad'])
+                )
+            return HttpResponse("Centro de Votacion Cargados Correctamente")
+        except Exception as e:
+            return HttpResponse(f"Error al cargar los centro de votacion: {e}")
+    return render(request, 'cv/cargar_cv.html')
+
+def cargar_guia(request):
+    if request.method == 'POST':
+        Contacto.objects.all().delete()
+        # Obtenemos el archivo subido
+        archivo_excel = request.FILES['archivo_excel']
+        
+        # Leemos el archivo Excel con pandas
+        try:
+            df = pd.read_excel(archivo_excel)
+            # Iteramos sobre las filas del DataFrame
+            for index, row in df.iterrows():
+                # Crear el contacto en la base de datos
+                Contacto.objects.create(
+                    id=row['id'],
+                    depto=row['depto'],
+                    munic=row['munic'],                    
+                    cv=row['cv'],
+                    grado1=row['grado1'],
+                    nom1=row['nom1'],
+                    num1=row['num1'],
+                    grado2=row['grado2'],
+                    nom2=row['nom2'],
+                    num2=row['num2'],
+                )
+            return HttpResponse("Centro de Votacion Cargados Correctamente")
+        except Exception as e:
+            return HttpResponse(f"Error al cargar los centro de votacion: {e}")
+    return render(request, 'cv/cargar_guia_telefonica.html')
+
+def guia_tel(request):
+    if request.method == 'GET':
+        query = request.GET.get('q', '')  # Obtiene el parámetro de búsqueda
+        contactos = Contacto.objects.all()
+        return render(request, 'cv/form_guia_telefonica.html', {'contactos': contactos})

@@ -26,7 +26,7 @@
       </div>
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <li class="nav-item">
+          {% comment %} <li class="nav-item">
             <a href="" class="nav-link">
               <i class="nav-icon fas fa-circle"></i>
               <p>
@@ -260,8 +260,8 @@
                 </a>
               </li>
             </ul>
-          </li>
-          <li class="nav-item">
+          </li> {% endcomment %}
+<li class="nav-item">
             <a href="" class="nav-link">
               <i class="nav-icon fas fa-circle"></i>
               <p>
@@ -322,6 +322,43 @@
                 <a href="{% url 'danos' 6 %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Areas Productivas</p>
+                </a>
+              </li>
+            </ul>
+          </li> 
+          <li class="nav-item">
+            <a href="" class="nav-link">
+              <i class="nav-icon fas fa-circle"></i>
+              <p>
+                CV
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{% url 'inicio' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Dashboard</p>
+                </a>
+              </li>
+            </ul>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{% url 'cv' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Centros de Votacion</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'mapa' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Monitoreo de Geoposicionamiento</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'guia_tel' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Guia Telefonica</p>
                 </a>
               </li>
             </ul>

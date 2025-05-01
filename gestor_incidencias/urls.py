@@ -18,4 +18,9 @@ urlpatterns = [
     path('asistencias/<int:tp_asist_p>', views.frm_princ_asist , name='asistencias'),
     path('asistencias_registro/<int:tp_asist_p>', views.frm_reg_asist ,name='asistencias_registro'),
     path('create_asistencias_bd/', views.create_asist_bd, name='create_asistencias_bd'),
+    path('cargar_cv/', views.cargar_cv, name='cargar_cv'),
+    path('cargar_guia_tel/', views.cargar_guia, name='cargar_guia'),
+    path('cv', views.frm_princ_cv , name='cv'),
+    path('mapa', views.frm_mapa , name='mapa'),
+    path('guia', views.guia_tel , name='guia_tel'),
     ]
