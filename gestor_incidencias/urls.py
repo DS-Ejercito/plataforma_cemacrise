@@ -11,6 +11,7 @@ urlpatterns = [
     path('incidencias/<int:tp_incidencia_p>', views.frm_princ_incidencias, name='incidencias'),
     path('incidencias_registro/<int:tp_incidencia_p>', views.frm_reg_incidencias, name='incidencias_registro'),
     path('load-municipios/', views.load_municipios, name='load_municipios'),
+    path('load-cv/', views.load_cv, name='load_cv'),
     path('create_inc_bd/', views.create_inc_bd, name='create_inc_bd'),
     path('danos/<int:tp_dano_p>', views.frm_princ_danos , name='danos'),
     path('danos_registro/<int:tp_dano_p>', views.frm_reg_danos, name='danos_registro'),
@@ -23,4 +24,7 @@ urlpatterns = [
     path('cv', views.frm_princ_cv , name='cv'),
     path('mapa', views.frm_mapa , name='mapa'),
     path('guia', views.guia_tel , name='guia_tel'),
+    path('registrar/', views.registrar_manual, name='registrar_manual'),
+    path('actualizar_cv/', views.actualizar_cv, name='actualizar_cv'),
+
     ]

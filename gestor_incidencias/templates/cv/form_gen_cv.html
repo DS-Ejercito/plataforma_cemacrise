@@ -81,9 +81,12 @@
                 <thead>
                     <tr>
                         <th>No.</th>
-                        <th>Fecha</th>
                         <th>Depto.</th>
                         <th>Munic.</th>
+                        <th>Sector.</th>
+                        <th>Carga.</th>
+                        <th>Nombre.</th>
+                        <th>Estado.</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -92,7 +95,10 @@
                     <td>{{ forloop.counter }}</td>
                     <td>{{cv.cod_depto.descrip_corta}}</td>
                     <td>{{cv.cod_munic.descrip_corta }} </td>
+                    <td>{{cv.sector_electoral}}</td>
+                    <td>{{cv.carga_electoral}}</td>
                     <td>{{cv.nom}}</td>
+                    <td>{{cv.cod_estado}}</td>
                   </tr>
                   {% endfor %}
                 </tbody>
@@ -182,19 +188,49 @@
   rows.forEach(row => {
     const lat = row.dataset.lat;
     const lng = row.dataset.lng;
+    
 
     if (lat && lng) {
-      const marker = L.marker([lat, lng], { icon: icon1 }) .addTo(map);
+      const estado = row.cells[6].innerText.trim();
+      let color;
+
+      switch (estado) {
+        case 'Abierto':
+        color = 'green';
+        break;
+      case 'Cerrado':
+        color = 'red';
+        break;
+      case 'Activo':
+        color = 'orange';
+        break;
+      case 'Inactivo':
+        color = 'gray';
+        break;
+      default:
+        color = 'blue';
+      }
+
+      const marker = L.circleMarker([lat, lng], {
+        radius: 2,
+        color: color,
+        fillColor: color,
+       fillOpacity: 0.8
+       }).addTo(map);
       marker.bindPopup(`
         <b>Departamento:</b> ${row.cells[1].innerText} <br>
         <b>Municipio:</b> ${row.cells[2].innerText} <br>
-        <b>CV:</b> ${row.cells[3].innerText}
+        <b>Sector:</b> ${row.cells[3].innerText}<br>
+        <b>Carga Electoral:</b> ${row.cells[4].innerText}<br>
+        <b>Nombre:</b> ${row.cells[5].innerText}<br>
+        <b>Estado:</b> ${row.cells[6].innerText}<br>
+        \
       `);
       markers.push(marker);
 
       // Agregar evento de clic a la fila para centrar el mapa
       row.addEventListener('click', () => {
-        map.setView(marker.getLatLng(), 12); // Centra el mapa en el marcador y ajusta el zoom
+        map.setView(marker.getLatLng(), 20); // Centra el mapa en el marcador y ajusta el zoom
         marker.openPopup(); // Abre el popup del marcador
       });
     }

@@ -60,6 +60,14 @@ def load_municipios(request):
     municipios = munic.objects.filter(cod_depto=depto_id).order_by('descrip_corta')  # Filtrar modelos por marca
     return JsonResponse(list(municipios.values('id', 'descrip_corta')), safe=False)
 
+
+def load_cv(request):
+    
+    cod_munic = request.GET.get('cod_munic')  # Obtener la ID de la marca desde la solicitud Ajax
+    print(cod_munic)
+    centros = cv.objects.filter(cod_munic=cod_munic).order_by('nom')  # Filtrar modelos por marca
+    return JsonResponse(list(centros.values('id', 'nom')), safe=False)
+
 def frm_princ_danos(request, tp_dano_p):
     tp_danos_v = get_object_or_404(tp_dano, id = tp_dano_p)
     dano = danos_ocasionados.objects.filter(tp_dano = tp_dano_p)
@@ -178,31 +186,31 @@ def cargar_cv(request):
 
 def cargar_guia(request):
     if request.method == 'POST':
-        Contacto.objects.all().delete()
-        # Obtenemos el archivo subido
+        cv.objects.all().delete()
         archivo_excel = request.FILES['archivo_excel']
         
-        # Leemos el archivo Excel con pandas
         try:
             df = pd.read_excel(archivo_excel)
-            # Iteramos sobre las filas del DataFrame
             for index, row in df.iterrows():
-                # Crear el contacto en la base de datos
-                Contacto.objects.create(
-                    id=row['id'],
-                    depto=row['depto'],
-                    munic=row['munic'],                    
-                    cv=row['cv'],
-                    grado1=row['grado1'],
-                    nom1=row['nom1'],
-                    num1=row['num1'],
-                    grado2=row['grado2'],
-                    nom2=row['nom2'],
-                    num2=row['num2'],
-                )
-            return HttpResponse("Centro de Votacion Cargados Correctamente")
+                try:
+                    cv.objects.create(
+                        cod_depto=depto.objects.get(id=row['cod_depto']),
+                        cod_munic=munic.objects.get(cod_munic=row['cod_munic']),
+                        cod_area=area.objects.get(id=row['cod_area']),
+                        latitud=row['latitud'],
+                        longitud=row['longitud'],
+                        sector_electoral=row['sector_electoral'],
+                        carga_electoral=str(row['carga_electoral']),
+                        nom=row['nom'],
+                        cod_estado=estado.objects.get(id=row['cod_estado'])
+                    )
+                except Exception as fila_error:
+                    print(f"Error en la fila {index + 2}: {fila_error}")
+                    return HttpResponse(f"Error en la fila {index + 2}: {fila_error}")
+            return HttpResponse("Centro de Votación cargados correctamente")
         except Exception as e:
-            return HttpResponse(f"Error al cargar los centro de votacion: {e}")
+            return HttpResponse(f"Error al procesar el archivo: {e}")
+    
     return render(request, 'cv/cargar_guia_telefonica.html')
 
 def guia_tel(request):
@@ -210,3 +218,32 @@ def guia_tel(request):
         query = request.GET.get('q', '')  # Obtiene el parámetro de búsqueda
         contactos = Contacto.objects.all()
         return render(request, 'cv/form_guia_telefonica.html', {'contactos': contactos})
+    
+def registrar_manual(request):
+    departamentos = depto.objects.all()
+    return render(request, 'cv/form_registro.html', {'departamentos': departamentos})
+
+def actualizar_cv(request):
+
+    if request.method == 'POST':
+        centro_id = request.POST.get('cv')  # ID del centro (cv.id)
+        estado_id = request.POST.get('estado')  # ID del nuevo estado (clave foránea)
+        nueva_img = request.FILES.get('imagen') # Imagen opcional
+        print(centro_id )
+        print(nueva_img)
+        print(estado_id)
+        try:
+            centro = get_object_or_404(cv, id=centro_id)
+
+            if estado_id:
+                centro.cod_estado = get_object_or_404(estado, id=estado_id)
+
+            if nueva_img:
+                centro.img = nueva_img
+
+            centro.save()
+            return JsonResponse({'mensaje': 'Centro actualizado correctamente'})
+        except Exception as e:
+            return JsonResponse({'error': f'Error al actualizar: {e}'}, status=500)
+
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
