@@ -261,7 +261,47 @@
               </li>
             </ul>
           </li> {% endcomment %}
-<li class="nav-item">
+          <li class="nav-item">
+            <a href="{% url 'dashboard' %}" class="nav-link">
+              <i class="nav-icon fas fa-columns"></i>
+              <p>
+                Dashboard
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'cv' %}" class="nav-link">
+              <i class="nav-icon fas fa-columns"></i>
+              <p>
+                Centros de Votacion
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'mapa' %}" class="nav-link">
+              <i class="nav-icon fas fa-columns"></i>
+              <p>
+                Geoposicionamiento
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'guia_tel' %}" class="nav-link">
+              <i class="nav-icon fas fa-columns"></i>
+              <p>
+                Guia Telefonica
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'registrar_manual' %}" class="nav-link">
+              <i class="nav-icon fas fa-columns"></i>
+              <p>
+                Formulario
+              </p>
+            </a>
+          </li>
+          {% comment %} <li class="nav-item">
             <a href="" class="nav-link">
               <i class="nav-icon fas fa-circle"></i>
               <p>
@@ -362,7 +402,7 @@
                 </a>
               </li>
             </ul>
-          </li>
+          </li> {% endcomment %}
         </ul>
       </nav>
     </div>

@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-mmnt4c=@d&i#4o^nz=4w*ng14eg-xxoda1t$qf0hrl8n((q+dw
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '172.22.16.16', '192.168.3.29']
+ALLOWED_HOSTS = ['127.0.0.1', '172.22.16.16', '192.168.3.29', '172.22.2.10','ejercito.ffaa.mil.hn']
 
 
 # Application definition
@@ -62,13 +62,26 @@ WSGI_APPLICATION = 'plataforma_cemacrise.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'mssql',
+#         'NAME': 'plataforma_cemacrise',
+#         'USER': '',
+#         'PASSWORD': '',
+#         'HOST': 'DEVM\\SQLEXPRESS',
+#         'PORT': '',
+#         'OPTIONS': {
+#             'driver': 'ODBC Driver 17 for SQL Server',
+#                      },
+#     }
+# }
 DATABASES = {
     'default': {
         'ENGINE': 'mssql',
         'NAME': 'plataforma_cemacrise',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': 'DEVM\\SQLEXPRESS',
+        'USER': 'sa',
+        'PASSWORD': 'T3cn0l0g1@13',
+        'HOST': '172.22.4.16',
         'PORT': '',
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',

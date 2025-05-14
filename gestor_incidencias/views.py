@@ -8,13 +8,19 @@ from .models import *
 list_deptos = depto.objects.all()
 list_munic = munic.objects.all()
 list_est_dano = est_dano.objects.all()
-cvs = cv.objects.all()
+
 
 def inicio(request):
+
     return render(request, 'index.html')
 
 def inicio_2(request):
+
     return render(request, 'core/base.html')
+
+def dashboard(request):
+
+    return render(request, 'cv/form_dashboard.html')
 
 def frm_princ_incidencias(request, tp_incidencia_p):
     tp_incidenvia_v = get_object_or_404(tp_incidencia, id = tp_incidencia_p)
@@ -150,7 +156,7 @@ def create_asist_bd(request):
     return frm_princ_asist(request, request.POST['id_asist'])
 
 def frm_princ_cv(request):
-
+    cvs = cv.objects.all()
     context = {
         'cv' : cvs
     }
@@ -188,7 +194,6 @@ def cargar_guia(request):
     if request.method == 'POST':
         cv.objects.all().delete()
         archivo_excel = request.FILES['archivo_excel']
-        
         try:
             df = pd.read_excel(archivo_excel)
             for index, row in df.iterrows():

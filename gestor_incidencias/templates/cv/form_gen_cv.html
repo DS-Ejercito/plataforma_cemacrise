@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="../../static/lib/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.gridlayer.googlemutant/Leaflet.GoogleMutant.js"></script>
+
 <!-- Estilos para pantalla completa -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@2.4.0/Control.FullScreen.css">
 <!-- Script para pantalla completa -->
@@ -165,75 +167,135 @@
             ]
         }).container().appendTo($('.dt-buttons'));
   })
-  const map = L.map('map', {
-    center: [14.664990, -86.895006], // Coordenadas iniciales
-    zoom: 7,
-    fullscreenControl: true, // Activa el botón de pantalla completa
-    fullscreenControlOptions: {
-      position: 'topleft' // Puedes cambiar la posición (topleft, topright, etc.)
-    }
-  });
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map);
+// Definimos las capas base
+const capaOSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+});
 
-  var icon1 = L.icon({
-      iconUrl: '../../static/img/punto.png',  // URL del icono
-      iconSize: [5, 5],  // Tamaño del icono
-      iconAnchor: [5, 5],  // Ancla del icono (punto de referencia)
-      popupAnchor: [0, -32]  // Ajuste del popup (si lo necesitas)
-  });
-  const rows = document.querySelectorAll("table tbody tr");
-  const markers = []; 
-  rows.forEach(row => {
-    const lat = row.dataset.lat;
-    const lng = row.dataset.lng;
-    
+const capaEsri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/' +
+    'World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+    attribution: '&copy; Esri & contributors'
+});
 
-    if (lat && lng) {
-      const estado = row.cells[6].innerText.trim();
-      let color;
+const capaCartoLight = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; CartoDB'
+});
 
-      switch (estado) {
-        case 'Abierto':
-        color = 'green';
-        break;
+const capaCartoDark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; CartoDB'
+});
+
+const capaEsriSat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/' +
+  'World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution: '&copy; Esri'
+});
+
+const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; OpenStreetMap contributors'
+});
+
+const cartoPositron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 20
+});
+
+const esriTopo = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/' +
+  'World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Tiles &copy; Esri &mdash; Source: Esri, USGS, NOAA',
+  maxZoom: 20
+});
+
+const esriSat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/' +
+  'World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Tiles &copy; Esri',
+  maxZoom: 20
+});
+
+const esriLabels = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/' +
+  'Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Labels &copy; Esri',
+  pane: 'overlayPane'
+});
+
+// Inicializamos el mapa con la capa base OSM
+const map = L.map('map', {
+  center: [14.664990, -86.895006],
+  zoom: 7,
+  fullscreenControl: true,
+  fullscreenControlOptions: { position: 'topleft' },
+  layers: [capaOSM]
+});
+
+// Objetos para las capas superpuestas (por estado)
+const capasEstado = {
+  'Abierto': L.layerGroup(),
+  'Cerrado': L.layerGroup(),
+  'Activo': L.layerGroup(),
+  'Inactivo': L.layerGroup(),
+  'Otro': L.layerGroup()
+};
+
+// Agregar los marcadores a sus respectivas capas
+const rows = document.querySelectorAll("table tbody tr");
+rows.forEach(row => {
+  const lat = row.dataset.lat;
+  const lng = row.dataset.lng;
+  if (lat && lng) {
+    const estado = row.cells[6].innerText.trim();
+    let color;
+    let capaDestino;
+
+    switch (estado) {
+      case 'Abierto':
+        color = 'green'; capaDestino = capasEstado['Abierto']; break;
       case 'Cerrado':
-        color = 'red';
-        break;
+        color = 'red'; capaDestino = capasEstado['Cerrado']; break;
       case 'Activo':
-        color = 'orange';
-        break;
+        color = 'orange'; capaDestino = capasEstado['Activo']; break;
       case 'Inactivo':
-        color = 'gray';
-        break;
+        color = 'gray'; capaDestino = capasEstado['Inactivo']; break;
       default:
-        color = 'blue';
-      }
-
-      const marker = L.circleMarker([lat, lng], {
-        radius: 2,
-        color: color,
-        fillColor: color,
-       fillOpacity: 0.8
-       }).addTo(map);
-      marker.bindPopup(`
-        <b>Departamento:</b> ${row.cells[1].innerText} <br>
-        <b>Municipio:</b> ${row.cells[2].innerText} <br>
-        <b>Sector:</b> ${row.cells[3].innerText}<br>
-        <b>Carga Electoral:</b> ${row.cells[4].innerText}<br>
-        <b>Nombre:</b> ${row.cells[5].innerText}<br>
-        <b>Estado:</b> ${row.cells[6].innerText}<br>
-        \
-      `);
-      markers.push(marker);
-
-      // Agregar evento de clic a la fila para centrar el mapa
-      row.addEventListener('click', () => {
-        map.setView(marker.getLatLng(), 20); // Centra el mapa en el marcador y ajusta el zoom
-        marker.openPopup(); // Abre el popup del marcador
-      });
+        color = 'blue'; capaDestino = capasEstado['Otro'];
     }
-  });
+
+    const marker = L.circleMarker([lat, lng], {
+      radius: 3,
+      color: color,
+      fillColor: color,
+      fillOpacity: 0.8
+    }).bindPopup(`
+      <b>Departamento:</b> ${row.cells[1].innerText} <br>
+      <b>Municipio:</b> ${row.cells[2].innerText} <br>
+      <b>Sector:</b> ${row.cells[3].innerText}<br>
+      <b>Carga Electoral:</b> ${row.cells[4].innerText}<br>
+      <b>Nombre:</b> ${row.cells[5].innerText}<br>
+      <b>Estado:</b> ${row.cells[6].innerText}<br>
+    `);
+
+    marker.addTo(capaDestino);
+
+    // Evento para centrar y mostrar el popup desde la tabla
+    row.addEventListener('click', () => {
+      map.setView(marker.getLatLng(), 20);
+      marker.openPopup();
+    });
+  }
+});
+
+// Agregamos todas las capas de estado al mapa por defecto (opcional)
+Object.values(capasEstado).forEach(capa => capa.addTo(map));
+
+// Control de capas
+L.control.layers(
+  {
+  "OpenStreetMap": osm,
+  "Esri Satélite": L.layerGroup([esriSat, esriLabels])
+  },
+  { "Abierto": capasEstado['Abierto'], "Cerrado": capasEstado['Cerrado'], "Activo": capasEstado['Activo'], "Inactivo": capasEstado['Inactivo']},
+  { collapsed: false }
+).addTo(map);
+
 </script>
 {% endblock %}

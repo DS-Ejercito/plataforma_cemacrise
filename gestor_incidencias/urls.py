@@ -24,6 +24,7 @@ urlpatterns = [
     path('cv', views.frm_princ_cv , name='cv'),
     path('mapa', views.frm_mapa , name='mapa'),
     path('guia', views.guia_tel , name='guia_tel'),
+    path('dashboard', views.dashboard , name='dashboard'),
     path('registrar/', views.registrar_manual, name='registrar_manual'),
     path('actualizar_cv/', views.actualizar_cv, name='actualizar_cv'),
 
